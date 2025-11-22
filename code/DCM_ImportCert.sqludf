@@ -1,0 +1,126 @@
+-- create function to Import Domain Certficate into DCM
+-- - Fails if already there - unless different expiry date
+
+
+set current schema RITFORI;
+
+create or replace function DCMIMPCERT (IDOMAIN varchar(128))
+returns char(3)
+specific DCMIMPCERT
+language sql
+not deterministic
+modifies sql data
+no external action
+   set option commit=*none, datfmt=*iso, usrprf=*user,
+    DBGVIEW=*SOURCE, OUTPUT=*PRINT
+begin
+declare CERT_PATH varchar(128);
+declare OSTATUS char(3);
+declare OTITLE char(20);
+declare ODETAIL varchar(256);
+declare OMETHOD char(20);
+declare OINSTANCE char(15);
+set CERT_PATH='/' || current user || '/acme/data/certs/' || IDOMAIN || '_ecc';
+with IMPORT_CERT as ( 
+   select *
+      from table(qsys2.HTTP_POST_VERBOSE (
+         'https://localhost:2012/rseapi/api/v1/security/dcm/cert/import',
+         '{"certStoreType": "CMS",
+           "certStorePath": "*SYSTEM",
+           "certStorePassword": "' concat
+              (select LEVALUE 
+                  from LETABLE 
+                  where LETYPE = 'SYSTEM'
+                     and LEDOMAIN is null) concat '",
+           "certType": "SERVER_CLIENT",
+           "certFormat": "PKCS12",
+           "certAlias": "' concat IDOMAIN concat 
+              (values(date(current timestamp))) concat '",
+           "certData": "' concat
+              (select line from table (qsys2.ifs_read(
+                 path_name => CERT_PATH concat '/base64.txt', 
+                 end_of_line => 'NONE', ignore_errors => 'NO')
+              )) concat ',",
+           "certDataPassword": "' concat
+              (select LEVALUE 
+                 from LETABLE 
+                 where LETYPE = 'CERT' 
+                    and LEDOMAIN = IDOMAIN) concat '"}',
+         substr((select LEVALUE from LETABLE 
+                     where LETYPE = 'SESSION_SQL'), 1, 101) concat
+          '","Content-Type":"application/json"}}'
+      ))
+),
+GET_STATUS as (
+   -- Get Token with eeror fields blank
+   select ICSTATUS, 
+          case when ICSTATUS = '204' then 
+             '{ "title": "", "detail": "", "method": "", "instance": ""}'
+          else 
+             RESPONSE_MESSAGE
+          end RESPONSE_MESSAGE      
+      from IMPORT_CERT, 
+         json_table(RESPONSE_HTTP_HEADER,
+         'lax $'
+         columns(
+            ICSTATUS varchar(22) path 'lax $.HTTP_STATUS_CODE'
+         )
+      )
+),
+IMPORT_DETAILS as (
+   select ICSTATUS, ISTATUS, ITITLE, IDETAIL
+      from GET_STATUS, 
+         json_table(RESPONSE_MESSAGE,  
+            'lax $'
+            columns(
+               ISTATUS char(3) path 'lax $.status',
+               ITITLE varchar(20) path 'lax $.title',
+               IDETAIL varchar(256) path 'lax $.detail'
+            )
+         ) 
+)
+   -- Put the fields into variables
+   select case when ICSTATUS = '204' then 
+             ICSTATUS
+          else 
+             ISTATUS 
+          end,
+          ITITLE, 
+          case when ICSTATUS = '204' then
+             IDOMAIN concat (values(date(current timestamp))) --IDETAIL
+          else
+             IDOMAIN concat ' ' concat IDETAIL
+          end     
+     into OSTATUS, 
+          OTITLE, 
+          ODETAIL
+     from IMPORT_DETAILS
+;
+
+-- Write results to LERESULTS
+insert into RITFORI.LERESULTS
+   values(IDOMAIN,
+      'IMPORT CERTIFICATE',
+      OSTATUS,
+      OTITLE,
+      ODETAIL,
+      current timestamp);
+
+if OSTATUS = '204' then
+   delete from RITFORI.LETABLE
+      where LETYPE = 'LAST_CERTIFICATE'
+         and LEDOMAIN = IDOMAIN;  
+   update RITFORI.LETABLE
+      set LETYPE = 'LAST_CERTIFICATE'
+      where LETYPE = 'CURRENT_CERTIFICATE'
+         and LEDOMAIN = IDOMAIN;
+   insert into RITFORI.LETABLE
+      values(IDOMAIN,
+         'CURRENT_CERTIFICATE',
+         IDOMAIN concat (values(date(current timestamp))),
+         current timestamp);
+   end if;
+
+-- Return the status code to the caller 
+return OSTATUS;       
+end;

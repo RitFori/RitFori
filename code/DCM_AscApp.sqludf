@@ -1,0 +1,106 @@
+-- create function to Associate Application with certificate RSE API ASSOCIATE_APP
+
+set current schema RITFORI;
+
+create or replace function DCMASCAPP (IDOMAIN varchar(128))
+returns char(3)
+specific DCMASCAPP
+language sql
+not deterministic
+modifies sql data
+no external action
+   set option commit=*none, datfmt=*iso, usrprf=*user,   
+   DBGVIEW=*SOURCE, OUTPUT=*PRINT
+begin
+declare ASCAPP char(128);
+declare OSTATUS char(3);
+declare OTITLE char(20);
+declare ODETAIL varchar(256);
+declare OMETHOD char(20);
+declare OINSTANCE char(15);
+with APPNAME as (
+   select LEVALUE 
+      from LETABLE 
+      where LETYPE = 'CERTAPP'
+         and LEDOMAIN = IDOMAIN
+   ),
+ASSOCIATE_APP as (
+   -- Get session token use RSEAPI
+   select *
+      from table(qsys2.HTTP_POST_VERBOSE (
+         'https://localhost:2012/rseapi/api/v1/security/dcm/appdef/associate',
+         '{"appDefinitionID": "' concat
+              (select LEVALUE from APPNAME) concat '",
+           "certAliases": ["' concat
+              (select LEVALUE 
+                 from LETABLE 
+                 where LETYPE = 'CURRENT_CERTIFICATE' 
+                    and LEDOMAIN = IDOMAIN) concat '"]}',
+         substr((select LEVALUE from LETABLE 
+                     where LETYPE = 'SESSION_SQL'), 1, 101) concat
+          '","Content-Type":"application/json"}}'
+
+      ))
+   ),
+GET_STATUS as (
+   -- Get Token with eeror fields blank
+   select AASTATUS, 
+          case when AASTATUS = '204' then 
+             '{ "title": "", "detail": "", "method": "", "instance": ""}'
+          else 
+             RESPONSE_MESSAGE
+          end AAERROR      
+      from ASSOCIATE_APP, 
+         json_table(RESPONSE_HTTP_HEADER,
+         'lax $'
+         columns(
+            AASTATUS varchar(22) path 'lax $.HTTP_STATUS_CODE'
+         )
+      )
+),
+GET_ERROR as (
+   -- Get Token and error fields    
+   select AASTATUS, RSTATUS, RTITLE, RDETAIL, RMETHOD
+      from GET_STATUS,  
+      json_table(AAERROR,
+         'lax $'
+         columns(
+               RSTATUS char(3) path 'lax $.status',
+               RTITLE varchar(20) path 'lax $.title',
+               RDETAIL varchar(256) path 'lax $.detail',
+               RMETHOD varchar(20) path 'lax $.method'
+         )
+      )        
+   )
+   -- Put the fields into variables
+      select case when AASTATUS = '204' then 
+             AASTATUS
+          else 
+             RSTATUS 
+          end,
+          RTITLE,
+          case when AASTATUS = '204' then
+             (select LEVALUE from APPNAME) 
+          else
+             (select LEVALUE from APPNAME)  concat ' ' concat RDETAIL
+          end,
+          OMETHOD    
+     into OSTATUS, 
+          OTITLE, 
+          ODETAIL,
+          OMETHOD
+     from GET_ERROR
+;
+
+-- Using variables insert into the appropriate tables
+insert into RITFORI.LERESULTS
+   values(IDOMAIN, 
+      'ASSOCIATE APP ',
+      OSTATUS,
+      OTITLE,
+      ODETAIL,
+      current timestamp);
+
+-- Return the status code to the caller 
+return OSTATUS;       
+end; 

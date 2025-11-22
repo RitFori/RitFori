@@ -1,0 +1,88 @@
+-- create function to Get RSE API Session Token using LOCALHOST
+
+set current schema RITFORI;
+
+create or replace function DCMGETSESS (IDOMAIN varchar(128))
+returns char(3)
+specific DCMGETSESS
+language sql
+not deterministic
+modifies sql data
+no external action
+   set option commit=*none, datfmt=*iso, usrprf=*user   
+begin
+declare OBEARER char(80);
+declare OSTATUS char(3);
+declare OTITLE char(20);
+declare ODETAIL varchar(256);
+declare OMETHOD char(20);
+declare OINSTANCE char(15);
+with GET_SESSION as (
+   -- Get session token use RSEAPI
+   select *
+      from table(qsys2.HTTP_POST_VERBOSE (
+         'https://localhost:2012/rseapi/api/v1/session', 
+         '{"host": "localhost", "userid": "' concat
+            current user concat
+            '", "password":"' concat
+               (select LEVALUE from LETABLE 
+                  where LETYPE = 'MAIN'
+                     and LEDOMAIN is null) concat '"}',
+         '{"header":"content-type,application/json"}'
+      ))
+   ),
+GET_BEARER as (
+   -- Get Token with eeror fields blank
+   select GSSTATUS, GSBEARER, 
+          case when GSSTATUS = '201' then 
+             '{ "title": "", "detail": "", "method": "", "instance": ""}'
+          else 
+             RESPONSE_MESSAGE
+          end GSERROR      
+      from GET_SESSION, 
+         json_table(RESPONSE_HTTP_HEADER,
+         'lax $'
+         columns(
+            GSSTATUS varchar(22) path 'lax $.HTTP_STATUS_CODE',
+            GSBEARER varchar(253) path 'lax $.Authorization' 
+         )
+      )
+),
+GET_ERROR as (
+   -- Get Token and error fields    
+   select GSSTATUS, GSBEARER, RTITLE, RDETAIL, RMETHOD, RINSTANCE
+      from GET_BEARER,--SESSION,      
+      json_table(GSERROR,
+         'lax $'
+         columns(
+               RTITLE varchar(20) path 'lax $.title' null on error,
+               RDETAIL varchar(256) path 'lax $.detail' null on error,
+               RMETHOD varchar(20) path 'lax $.method' null on error,
+               RINSTANCE varchar(253) path 'lax $.instance' null on error
+         )
+      )        
+   )
+   -- Put the fields into variables
+   select GSSTATUS, GSBEARER, RTITLE, RDETAIL, RMETHOD, RINSTANCE 
+      into OSTATUS, OBEARER, OTITLE, ODETAIL, OMETHOD, OINSTANCE
+      from GET_ERROR;
+
+-- Using variables insert into the approopiate tables
+if OSTATUS = '201' then
+   insert into RITFORI.LETABLE
+      values(IDOMAIN, 
+         'SESSION_SQL',
+         '{"headers":{"Authorization":"' concat OBEARER concat '"}}', 
+         current timestamp);         
+else
+   insert into RITFORI.LERESULTS
+      values(IDOMAIN, 
+         'SESSION_SQL ' concat OMETHOD,
+         OSTATUS,
+         OTITLE,
+         ODETAIL,
+         current timestamp);
+end if; 
+-- Return the status code to the caller 
+return OSTATUS;       
+end; 

@@ -1,0 +1,80 @@
+-- create function to delete RSE API Session Token
+
+set current schema RITFORI;
+
+create or replace function DCMDLTSESS (IDOMAIN varchar(128))
+returns char(3)
+specific DCMDLTSESS
+language sql
+not deterministic
+modifies sql data
+no external action
+   set option commit=*none, datfmt=*iso, usrprf=*user   
+begin
+declare OSTATUS char(3);
+declare OTITLE char(20);
+declare ODETAIL varchar(256);
+declare OMETHOD char(20);
+declare OINSTANCE char(15);
+with DELETE_SESSION as (
+   -- Get session token use RSEAPI
+   select *
+      from table(qsys2.HTTP_DELETE_VERBOSE (
+         'https://localhost:2012/rseapi/api/v1/session',
+         (select LEVALUE from LETABLE 
+             where LETYPE = 'SESSION_SQL' 
+               and LEDOMAIN = IDOMAIN)
+      ))
+   ),
+GET_STATUS as (
+   -- Get Token with eeror fields blank
+   select GSSTATUS, 
+          case when GSSTATUS = '204' then 
+             '{ "title": "", "detail": "", "method": "", "instance": ""}'
+          else 
+             RESPONSE_MESSAGE
+          end GSERROR      
+      from DELETE_SESSION, 
+         json_table(RESPONSE_HTTP_HEADER,
+         'lax $'
+         columns(
+            GSSTATUS varchar(22) path 'lax $.HTTP_STATUS_CODE'
+         )
+      )
+),
+GET_ERROR as (
+   -- Get Token and error fields    
+   select GSSTATUS, RTITLE, RDETAIL, RMETHOD, RINSTANCE
+      from GET_STATUS,  
+      json_table(GSERROR,
+         'lax $'
+         columns(
+               RTITLE varchar(20) path 'lax $.title' null on error,
+               RDETAIL varchar(256) path 'lax $.detail' null on error,
+               RMETHOD varchar(20) path 'lax $.method' null on error,
+               RINSTANCE varchar(253) path 'lax $.instance' null on error
+         )
+      )        
+   )
+   -- Put the fields into variables
+   select GSSTATUS, RTITLE, RDETAIL, RMETHOD, RINSTANCE 
+      into OSTATUS, OTITLE, ODETAIL, OMETHOD, OINSTANCE
+      from GET_ERROR;
+
+-- Using variables insert into the approopiate tables
+if OSTATUS = '204' then
+   delete from RITFORI.LETABLE
+      where LEDOMAIN = IDOMAIN 
+        and LETYPE = 'SESSION_SQL';         
+else
+   insert into RITFORI.LERESULTS
+      values(IDOMAIN, 
+         'SESSION_SQL ' concat OMETHOD,
+         OSTATUS,
+         OTITLE,
+         ODETAIL,
+         current timestamp);
+end if; 
+-- Return the status code to the caller 
+return OSTATUS;       
+end; 

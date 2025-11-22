@@ -1,0 +1,53 @@
+PGM PARM(&CERTNAME &USRPWD &DCMPWD &CERTAPP)
+
+/* Sets up table entries for DCM and imports DCM CAs to DCM */
+
+/* Parameter Variables */
+DCL VAR(&CERTNAME) TYPE(*CHAR) LEN(32)
+DCL VAR(&USRPWD) TYPE(*CHAR) LEN(32)
+DCL VAR(&DCMPWD) TYPE(*CHAR) LEN(32)
+DCL VAR(&CERTAPP) TYPE(*CHAR) LEN(32)
+
+/* Constant variables */
+DCL VAR(&UTF) TYPE(*CHAR) LEN(25) VALUE('export LANG=en_US.UTF-8; ')
+
+
+/* Other Variables */
+DCL VAR(&LOG) TYPE(*CHAR) LEN(36)
+DCL var(&LOGPIPE) TYPE(*CHAR) LEN(46)
+DCL VAR(&STRING) TYPE(*CHAR) LEN(250)
+DCL VAR(&STRING50) TYPE(*CHAR) LEN(50)
+DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(11)
+DCL VAR(&USRPRF) TYPE(*CHAR) LEN(10)
+
+CHGCURLIB CURLIB(RITFORI)
+/* Top directory is now /UserId */
+RTVUSRPRF RTNUSRPRF(&USRPRF)
+CHGVAR VAR(&TOPDIR) VALUE('/' *CAT &USRPRF)
+CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/DCM_setup3.log ')
+CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
+
+/* Log QSH output to setup.log for this job */
+CHGVAR VAR(&STRING50) VALUE('touch ' *CAT &LOG)
+STRQSH CMD(&STRING50)
+CHGATR OBJ(&LOG) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING50) VALUE('FILEAPPEND=' *CAT &LOG *CAT ' ')
+ADDENVVAR ENVVAR(QIBM_QSH_CMD_OUTPUT) VALUE(&STRING50) REPLACE(*YES)
+
+/* Create SQL global variable for Domain and copy Source for Issue and Renew*/
+CHGVAR VAR(&STRING) VALUE(&UTF *CAT  '/tmp/ritfori/code/DCM_Tables.sh ' +
+       *CAT &TOPDIR *TCAT ' '  +
+       *CAT &CERTNAME *TCAT ' ' +
+       *CAT &USRPWD *TCAT ' ' +
+       *CAT &DCMPWD *TCAT ' ' +
+       *CAT &CERTAPP *TCAT &LOGPIPE)
+STRQSH CMD(&STRING)
+
+/* Import LE CAs into DCM */
+CHGVAR VAR(&STRING) VALUE(&UTF *CAT  '/tmp/ritfori/code/DCM_CA.sh' *TCAT &LOGPIPE)
+STRQSH CMD(&STRING)
+
+/* Get RSE API Get Session Token, Import Certificate to DCM, */
+CALL PGM(DCM_IMPORT) PARM(&CERTNAME '/acme/log/DCM_setup3.log ')
+
+ENDPGM

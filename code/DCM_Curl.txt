@@ -1,0 +1,9 @@
+curl -i -o /tmp/ritfori/code/tmp/RSEAPI_Session.log -X 'POST' -v  \
+  --cacert /$AUTH/acme/data/certs/ca-bundle.pem \
+   'https://$DOMAIN:2012/rseapi/api/v1/session' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{"host": "localhost",
+       "userid": "$AUTH",
+       "password": "$PSWD"
+      }'

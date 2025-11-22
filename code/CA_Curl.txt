@@ -1,0 +1,14 @@
+curl -i -o /tmp/ritfori/code/tmp/setupCAs_Import.log -X 'POST' -v \
+  --cacert /$AUTH/acme/data/certs/ca-bundle.pem \
+  'https://$DOMAIN:2012/rseapi/api/v1/security/dcm/cert/import' \
+  -H 'accept: */*' \
+  -H 'Authorization: Bearer $TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "certStoreType": "CMS",
+  "certStorePath": "*SYSTEM",
+  "certStorePassword": "$PASS",
+  "certType": "CA",
+  "certFormat": "DER",
+  "certAlias": "$ALIAS",
+  "certData": 

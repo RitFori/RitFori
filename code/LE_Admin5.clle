@@ -1,0 +1,6 @@
+PGM
+/* Restart RSE API to be able to use latest certficate in the JKS */
+ENDTCPSVR SERVER(*IAS) INSTANCE(ADMIN5)
+DLYJOB DLY(30)
+STRTCPSVR SERVER(*IAS) INSTANCE(ADMIN5)
+ENDPGM

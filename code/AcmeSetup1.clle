@@ -1,0 +1,93 @@
+PGM
+
+/* CRTBNDCL PGM(QTEMP/ACMESETUP1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') +
+    DFTACTGRP(*NO) ACTGRP(*NEW) DBGVIEW(*SOURCE)                      */
+/* Create your USRPRF before executing this and signon as your USRPRF +
+    to execute this */
+/* CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) +
+    CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') */    
+/* Executing this signed in as USRPRF will create +
+    a home directory /USRPRF and a libray RITFORI */
+/* CALL PGM(QTEMP/ACMESETUP1) then signoff and on to continue */
+/* All the .sh should initially be in /tmp/ritfori/code */ 
+/* Code used repeatably is copied to /USERPRF/source */
+/* This CL will be compiled into QTEMP as it only needs to execute once */
+
+/* Constant variables */
+DCL VAR(&UTF) TYPE(*CHAR) LEN(25) VALUE('export LANG=en_US.UTF-8; ')
+
+/* Other Variables */
+DCL VAR(&LOG) TYPE(*CHAR) LEN(36)
+DCL var(&LOGPIPE) TYPE(*CHAR) LEN(46)
+DCL VAR(&LONGSTRING) TYPE(*CHAR) LEN(200)
+DCL VAR(&STRING) TYPE(*CHAR) LEN(32)
+DCL VAR(&STRING50) TYPE(*CHAR) LEN(50)
+DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(11)
+DCL VAR(&USRPRF) TYPE(*CHAR) LEN(10)
+
+/* Top directory is now /UserId */
+RTVUSRPRF RTNUSRPRF(&USRPRF)
+CHGVAR VAR(&TOPDIR) VALUE('/' *CAT &USRPRF)
+CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/acme_setup1.log ')
+CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
+
+/* Change CCSID */
+CHGATR OBJ('/tmp/ritfori') ATR(*CCSID) VALUE(1208) SUBTREE(*ALL)
+CHGAUT OBJ('/tmp/ritfori') USER(QDIRSRV QTMHHTTP) DTAAUT(*NONE) OBJAUT(*NONE) SUBTREE(*ALL)
+CHGAUT OBJ('/tmp/ritfori') USER(*PUBLIC) DTAAUT(*EXCLUDE) OBJAUT(*NONE) SUBTREE(*ALL)
+
+/* Need a library for programs and SQL later */
+CRTLIB LIB(RITFORI) TEXT('RITFORI Let''s Encrypt Acme Programs') +
+   AUT(*EXCLUDE) CRTAUT(*EXCLUDE) CRTOBJAUD(*NONE)
+CHGCURLIB CURLIB(RITFORI) 
+
+/* Create directory levels for Acme account data, code, and certificates */
+MKDIR DIR(&TOPDIR)
+CHGAUT OBJ(&TOPDIR) USER(*PUBLIC) DTAAUT(*EXCLUDE) OBJAUT(*NONE)
+CHGATR OBJ(&TOPDIR) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/.acme.sh''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme/acct''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme/data''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme/data/certs''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme/log''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING) VALUE('''' *CAT &TOPDIR *TCAT '/acme/source''')
+MKDIR DIR(&STRING)
+CHGATR OBJ(&STRING) ATR(*CCSID) VALUE(1208)
+
+/* Setup QSH log output for this job */
+CHGVAR VAR(&STRING50) VALUE('touch ' *CAT &LOG)
+STRQSH CMD(&STRING50)
+CHGATR OBJ(&LOG) ATR(*CCSID) VALUE(1208)
+CHGVAR VAR(&STRING50) VALUE('FILEAPPEND=' *CAT &LOG *CAT ' ')
+ADDENVVAR ENVVAR(QIBM_QSH_CMD_OUTPUT) VALUE(&STRING50) REPLACE(*YES)
+
+/* Setup SSH and .profile */
+CHGVAR VAR(&LONGSTRING) VALUE(&UTF *CAT  '/tmp/ritfori/code/SSH_Profile.sh' *CAT &LOGPIPE)
+STRQSH CMD(&LONGSTRING)
+
+/* Set BASH as the default shell for this user */
+CHGVAR VAR(&LONGSTRING) VALUE('CALL QSYS2.SET_PASE_SHELL_INFO(''' *CAT &USRPRF *TCAT ''',''/QOpenSys/pkgs/bin/bash'')')
+RUNSQL SQL(&LONGSTRING)
+CHGFCNUSG FCNID(QIBM_DB_SECADM) USER(&USRPRF) USAGE(*ALLOWED)
+
+CRTBNDCL PGM(RITFORI/AcmePgms) SRCSTMF('/tmp/ritfori/code/AcmePgms.clle') +
+            DFTACTGRP(*NO) ACTGRP(*NEW)
+CALL PGM(RITFORI/ACMEPGMS)
+
+/* Signoff and On to continue !!!!!!!! */
+
+EXIT:
+ENDPGM
