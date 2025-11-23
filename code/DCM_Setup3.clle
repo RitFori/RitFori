@@ -24,6 +24,11 @@ CHGCURLIB CURLIB(RITFORI)
 /* Top directory is now /UserId */
 RTVUSRPRF RTNUSRPRF(&USRPRF)
 CHGVAR VAR(&TOPDIR) VALUE('/' *CAT &USRPRF)
+
+/* Create directory for Temp Logs */
+CRTDIR DIR('/tmp/ritfori/code/tmp')
+MONMSG MSGID(CPFA0A0)
+
 CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/DCM_setup3.log ')
 CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
 
