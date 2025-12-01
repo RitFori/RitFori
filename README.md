@@ -1,6 +1,7 @@
 # RitFori
 IBM i Let's Encrypt Automation – Almost \
 Created by  Rowton IT Solutions Ltd and Forever-i Ltd
+Developed by Terry Bartlett (Forever-i)
 
 ## Introduction
 ### Abbreviations
