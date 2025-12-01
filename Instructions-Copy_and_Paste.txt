@@ -1,0 +1,27 @@
+This is a simple version of the instructions to simplify Copy and Paste to 5250.  
+It is adivasable to use this alongside the Intrucstions PDF.
+
+CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
+
+Download the Code to the IBM I
+Restore the RITFORI software
+
+CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
+CALL PGM(ACMESETUP1)
+
+Sign off and on again
+
+CALL PGM(ACMESETUP1) ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
+
+DCM Setup part 1 – Manual
+DCM Setup part 2 – Manual
+DCM Setup part 3
+
+DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
+
+Renew the certificate before 90 days
+
+LERenew CERTNAME('name.domain.TLD') DCM_YN(YES) 
+
+CALL PGM(LE_ADMIN5) 
+DCMDltCert CERTNAME('name.domain.TLD')

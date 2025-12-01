@@ -12,7 +12,7 @@ if [ ! -f acmecopy.sh ]; then
   cp acme.sh acmecopy.sh
   d1="$(date -d "$date" +"%b %d %Y")"
   shebang1='#!/usr/bin/env sh'
-  note1='#!/QOpenSys/pkgs/bin/bash\n\n# Modification Notification to acme.sh - Modified '
+  note1='#!/QOpenSys/pkgs/bin/bash\n\n# Modification Notification to acme.sh by RITFORI software after download\n# Modified '
   note2=' to change shebang (1st line) to IBM i\n#    and change DEFAULT_CA to LETSENCRYPT before registering the account'
   change="$note1 $d1 $note2"
   sed -i "s:$shebang1:${change}:" acme.sh

@@ -21,7 +21,7 @@ TLS is important for applications.  It encrypts the traffic between the user and
 
 ### About this software
 
-This is a first attempt to create a usable apllication for automating Let’s Encrypt certificates.  
+This is a first attempt to create a usable apllication for automating Let’s Encrypt certificates. It is a work in progress, any suggestions for improvements are welcome.
 
 RitFori has been written and tested on V7.4 and V7.5.  The domain tested is registered on Cloudflare which has an API that automates the Let’s Encrypt DNS Challenge by supplying an API token.  Domains with other suppliers may not work without changes.
 
