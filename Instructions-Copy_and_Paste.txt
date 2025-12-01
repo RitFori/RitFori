@@ -1,12 +1,15 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is adivasable to use this alongside the Intrucstions PDF.
 
+Recommended to use RITFORI as USRPRF
 CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
+
+5250 Sign on as above USRPRF
 
 CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
 CALL PGM(ACMESETUP1)
 
-Sign off and on again
+5250 Sign off and on again as above USRPRF
 
 CALL PGM(ACMESETUP1) ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
 
