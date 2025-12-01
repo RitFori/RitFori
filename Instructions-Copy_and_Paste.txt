@@ -3,9 +3,6 @@ It is adivasable to use this alongside the Intrucstions PDF.
 
 CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
 
-Download the Code to the IBM I
-Restore the RITFORI software
-
 CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
 CALL PGM(ACMESETUP1)
 
