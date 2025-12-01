@@ -5,6 +5,14 @@ Recommended to use RITFORI as USRPRF
 CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
 
 5250 Sign on as above USRPRF
+MKDIR DIR('/tmp/ritfori') 
+CD DIR('/tmp/ritfori')  
+CALL PGM(QP2TERM)
+wget -qO .curl.pem http://curl.haxx.se/ca/cacert.pem -no-check-certificate
+wget --ca-certificate=.curl.pem -O https://github.com/RitFori/RitFori/archive/refs/heads/main.zip
+unzip ./RitFori-main.zip
+mv RitFori-main ritfori
+F3
 
 CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
 CALL PGM(ACMESETUP1)
