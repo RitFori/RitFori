@@ -37,9 +37,9 @@ The Library is called RITFORI, so it may be an idea to create the user profile a
 
 
 **There are 6 initial steps**
-1. **Download the Instructions PDF** In a brwser go to https://github.com/RitFori/RitFori/blob/main/Instructions.pdf and click the "Download raw file" button (top right).  Read this document first.  There is also an "Instructions-Copy_and_Paste.txt" to make things easier.
+1.  **Create a User Profile**, **Download the Instructions PDF** In a brwser go to https://github.com/RitFori/RitFori/blob/main/Instructions.pdf and click the "Download raw file" button (top right).  Read this document first.  There is also an "Instructions-Copy_and_Paste.txt" to make things easier.
 2. **Download the repository**, copy it to your IBM i to /tmp
-3. **Create a User Profile**, **Sign On**, **Unzip the repository** to /tmp/ritfori, compile and run **Acme Setup 1**. This sets up the user for SSH (required) and sets up the basic environment (Library and Directory structure).
+3. **Sign On**, **Unzip the repository** to /tmp/ritfori, compile and run **Acme Setup 1**. This sets up the user for SSH (required) and sets up the basic environment (Library and Directory structure).
 4. **Sign off and on again**. Run **Acme Setup 2**. This installs and registers your account for “acme-official / acme.sh”. Then it creates a JKS with Let’s Encrypt CAs, issues your first certificate and adds it to the JKS.
 5. This is the manual part. You need to configure ADMIN5 (IBM i Apache HTTP server) with the JKS as the TLS. You also have to add an Application name to the DCM, if you are going to use your certificate from the DCM and it needs an application.
 6. Run **DCM Setup 3** if required.  This imports the Let’s Encrypt CAs and your certificate into the DCM and also attaches the application.

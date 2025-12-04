@@ -20,6 +20,8 @@ unzip ./RitFori-main.zip
 mv RitFori-main ritfori
 F3
 
+5250 Still Signed on as your USRPRF
+
 CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
 CALL PGM(ACMESETUP1)
 
