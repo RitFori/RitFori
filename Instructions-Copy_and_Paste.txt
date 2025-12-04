@@ -1,14 +1,14 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is adivasable to use this alongside the Intrucstions PDF.
 
-Recommended to use RITFORI as USRPRF
-CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
-
 Download RITFORI code to your pc from https://github.com/RitFori/RitFori/archive/refs/heads/main.zip
  (just put the link into a browser or use Github - Code - Download Zip) 
 
-Upload RitFori-main.zip to /tmp on the IBM I
+Upload RitFori-main.zip to /tmp on the IBM i
  (ACS – Integrated File System is good for this)
+
+Recommended to use RITFORI as USRPRF
+CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
 
 5250 Signon as your USRPRF
 
@@ -25,7 +25,7 @@ CALL PGM(ACMESETUP1)
 
 5250 Sign off and on again as above USRPRF
 
-CALL PGM(ACMESETUP1) ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
+ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
 
 DCM Setup part 1 – Manual
 DCM Setup part 2 – Manual
@@ -33,7 +33,7 @@ DCM Setup part 3
 
 DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
 
-Renew the certificate before 90 days
+Renew the certificate before 90 days (Do not Renew it with DCM=YES on the same day)
 
 LERenew CERTNAME('name.domain.TLD') DCM_YN(YES) 
 
