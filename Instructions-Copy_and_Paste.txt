@@ -1,12 +1,14 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
-It is adivasable to use this alongside the Intrucstions PDF.
+It is advisable to use this alongside the Instructions PDF.
 
 Download instructions
 https://github.com/RitFori/RitFori/blob/main/Instructions.pdf
   (just put the link into a browser and click on Download raw file button)
 
-Recommended to use RITFORI as USRPRF
-CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
+Recommended to use RITFORI as USRPRF, but can be anything
+Do not use special characters except for _ in USRPRF and PASSWORD
+
+   CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
 
 Download RITFORI code to your pc from https://github.com/RitFori/RitFori/archive/refs/heads/main.zip
  (just put the link into a browser or use Github - Code - Download Zip) 
@@ -16,32 +18,46 @@ Upload RitFori-main.zip to /tmp on the IBM i
 
 5250 Signon as your USRPRF
 
-CD DIR('/tmp')
-CALL PGM(QP2TERM)
-PATH=/QopenSys/pkgs/bin:\$PATH
-export PATH PASE_PATH
-unzip ./RitFori-main.zip
-mv RitFori-main ritfori
-F3
+    CD DIR('/tmp')
+    CALL PGM(QP2TERM)
+    PATH=/QopenSys/pkgs/bin:\$PATH
+    export PATH PASE_PATH
+    unzip ./RitFori-main.zip
+    mv RitFori-main ritfori
+   F3
 
 5250 Still Signed on as your USRPRF
 
-CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
-CALL PGM(ACMESETUP1)
+    CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
+    CALL PGM(ACMESETUP1)
 
 5250 Sign off and on again as above USRPRF
 
-ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
+    ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
 
-DCM Setup part 1 – Manual
-DCM Setup part 2 – Manual
-DCM Setup part 3
+Web (HTTP) Admin with user profile who has *IOSYSCFG
+DCM Setup part 1 – Manual – see Instructions.pdf
 
-DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
+    /USRPRF/acme/data/certs/name.domain.TLD_ecc/lekeystore.jks
+    Jks_password
+    name.domain.TLD
+
+Browser
+
+    https://name.domain.TLD:2012/openapi/ui/
+
+DCM with user profile who has *ALLOBJ and *SECADM - can use your USRPRF 
+DCM Setup part 2 – Manual – see Instructions.pdf
+
+    your_application_name_for_DCM
+
+5250 Still Signed on as your USRPRF
+
+    DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
 
 Renew the certificate before 90 days (Do not Renew it with DCM=YES on the same day)
 
-LERenew CERTNAME('name.domain.TLD') DCM_YN(YES) 
+    LERenew CERTNAME('name.domain.TLD') DCM_YN(YES) 
 
-CALL PGM(LE_ADMIN5) 
-DCMDltCert CERTNAME('name.domain.TLD')
+    CALL PGM(LE_ADMIN5) 
+    DCMDltCert CERTNAME('name.domain.TLD')
