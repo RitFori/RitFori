@@ -1,7 +1,7 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is advisable to use this alongside the Instructions PDF.
 
-N.B. If you download the new Change_HOME-Directory from 06/01/2026,
+N.B. If you download the new Change_HOME-Directory from 6th January 2026,
      having used the Original version, follow these instructions
 
 If you do NOT change the USRPRF home directory
@@ -19,12 +19,9 @@ Now change the HOME directory of your user e.g. to /home/USRPRF
 4. DEL OBJLNK('/tmp/RitFori-main.zip')
 4. CHGUSRPRF USRPRF(USRPRF) HOMEDIR('/home/USRPRF') or whatever directory you want
 5. Start from the beginning and download RITFORI etc
-     But change the last line 
-		from     mv RitFori-main ritfori
-		to       mv RitFori-Change-HOME-directory ritfori 
-6. Once yor finished you can delete the OLD Cerfificate from the DCM
+6. Once yor finished you can delete the OLD Certificate from the DCM
 
-If starting for the first time, follow rthese instructions
+If starting for the first time, follow these instructions
 
 Download instructions
 https://github.com/RitFori/RitFori/blob/main/Instructions.pdf
