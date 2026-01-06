@@ -10,6 +10,7 @@ DCL VAR(&USRPRF) TYPE(*CHAR) LEN(10)
 
 /* Top directory is now Home directory of user */
 CRTDTAARA DTAARA(USRHOME) TYPE(*CHAR) LEN(1024) VALUE('     ')
+MONMSG MSGID(CPF1023)
 CHGVAR VAR(&STRING) VALUE('/tmp/ritfori/code/Store_home.sh')
 STRQSH CMD(&STRING)
 
