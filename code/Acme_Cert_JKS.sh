@@ -1,11 +1,10 @@
 #!/QOpenSys/pkgs/bin/bash
 # Import Let's Encrypt Certificate to JKS (Java Keystore) needed for DCM
-# Parameters $1 Top Level Directory
 
 PATH=/QOpenSys/pkgs/bin:$PATH
 export PATH PASE_PATH
 
-echo Running Acme_CA_JKS.sh
+echo Running Acme_Cert_JKS.sh
 
 # Setup parameters 
 # domain = the sub domain name with single quotes for the SELECT statement
@@ -17,7 +16,7 @@ domain=${domain//\"/\'}
 pass=$(db2util "select LEVALUE from LETABLE where LETYPE='CERT' and LEDOMAIN=$domain")
 pass=${pass//\"/ }
 domain=${domain//\'/}
-domainpath=$1/acme/data/certs/
+domainpath=$HOME/acme/data/certs/
 domainpath=$domainpath$domain
 ecc=_ecc
 domainpath=$domainpath$ecc

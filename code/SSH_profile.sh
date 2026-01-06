@@ -1,10 +1,9 @@
 #!/QOpenSys/pkgs/bin/bash
 # Setup SSH .profile
-# Parameters $1 Top Level Directory (Default RITFORI)
 
 echo Running SSH_profile.sh - no messages means it worked. $(date)
-#echo
-cd $1
+
+cd $HOME
 if [ ! -f .profile ]; then  
    cat << EOF >> .profile
 PATH=/QOpenSys/pkgs/bin:\$PATH

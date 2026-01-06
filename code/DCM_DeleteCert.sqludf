@@ -2,9 +2,9 @@
 
 set current schema RITFORI;
 
-create or replace function DCMDLTCERT (IDOMAIN varchar(128))
+create or replace function DCMDLTLAST (IDOMAIN varchar(128))
 returns char(3)
-specific DCMDLTCERT
+specific DCMDLTLAST
 language sql
 not deterministic
 modifies sql data
@@ -12,13 +12,11 @@ no external action
    set option commit=*none, datfmt=*iso, usrprf=*user,
     DBGVIEW=*SOURCE, OUTPUT=*PRINT
 begin
-declare CERT_PATH varchar(128);
 declare OSTATUS char(3);
 declare OTITLE char(20);
 declare ODETAIL varchar(256);
 declare OMETHOD char(20);
 declare OINSTANCE char(15);
-set CERT_PATH='/' || current user || '/acme/data/certs/' || IDOMAIN || '_ecc';
 with DELETE_CERT as ( 
    select *
       from table(qsys2.HTTP_POST_VERBOSE (

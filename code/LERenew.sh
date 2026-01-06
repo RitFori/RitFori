@@ -8,7 +8,7 @@ export PATH PASE_PATH
 
 echo "running LERenew"
 # Get current user for start of path
-toppath=/$("whoami")
+toppath=$HOME
 cd /$toppath/acme/source
 
 # Put Current Domain in Global Variable for DCM

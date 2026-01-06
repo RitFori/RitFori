@@ -7,7 +7,7 @@ export PATH PASE_PATH
 
 echo "Running LERenewJKS"
 # Get current user for start of path
-toppath=/$("whoami")
+toppath=$HOME
 # Log Path
 logpath=$toppath/acme/log
 

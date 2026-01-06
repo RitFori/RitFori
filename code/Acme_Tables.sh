@@ -29,7 +29,7 @@ db2util "alter table LETABLE activate column access control"
 # insert info needed so far
 echo "   INSERT certificate INFO to LETABLE * $(date) * "
 db2util "insert into LETABLE values ('$2', 'CERT', '$4', current timestamp), ('$2', '"TOKEN"', '$3', current timestamp)"
-#) 2>&1 | tee -a /$1/acme/log/acme_tables.log
+#) 2>&1 | tee -a /$HOME/acme/log/acme_tables.log
 email=$(db2util "select LEVALUE from LETABLE where LETYPE='EMAIL' and LEDOMAIN is null")
 # only insert e-mail  and JKS-Domain once
 if [[ "$email" == '' ]]; then

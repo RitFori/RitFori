@@ -7,7 +7,7 @@ export PATH PASE_PATH
 echo "Running DCM_DeleteCert" 
 #
 # Get current user for start of path
-toppath=/$("whoami")
+toppath=$HOME
 # Get domain from db - returns with " "
 domain=$(db2util "values(RITFORI.DCMDOMAIN)")
 # change " to blank
@@ -20,7 +20,7 @@ domainpath=$toppath/acme/data/certs/${domain}_ecc
    
    if [[ "$gs_status" == '"201"' ]]; then 
       # Delete Domain Certificate to DCM
-      dc_status=$(db2util "select RITFORI.DCMDLTCERT('$domain') from sysibm.sysdummy1")
+      dc_status=$(db2util "select RITFORI.DCMDLTLAST('$domain') from sysibm.sysdummy1")
       if [[ "$dc_status" == '"204"' ]]; then
          echo "$domain certificate deleted from DCM"
       else

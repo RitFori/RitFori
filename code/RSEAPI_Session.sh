@@ -43,6 +43,7 @@ domain=${domain//\'/}
 #echo $domain
 # create and edit a script to import the Let's Encrypt CAs into the DCM
 cp DCM_Curl.txt DCM_Curl.sh
+sed -i 's:$TOPDIR:'$HOME':' DCM_Curl.sh 
 sed -i 's/$DOMAIN/'$domain/ DCM_Curl.sh
 # sed delimiter is # to delete ' from Domain name
 #sed -i "s#/'#/#" DCM_Curl.sh

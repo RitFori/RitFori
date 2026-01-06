@@ -1,14 +1,21 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is advisable to use this alongside the Instructions PDF.
 
+N.B. If you want to change the HOMEDIR of your user and have already created your certificate do the following:-
+1. Move /USRPRF to /NewLocation/USRPRF
+2. Logged on as your user 5250 execute STRQSH CMD('/tmp/ritfori/code/Store_Home.sh')
+3. Repeat the DCM Setup part 1 – Manual - for the new location (which attaches the JKSSTORE to ADMIN5)
+
+
 Download instructions
 https://github.com/RitFori/RitFori/blob/main/Instructions.pdf
   (just put the link into a browser and click on Download raw file button)
 
-Recommended to use RITFORI as USRPRF, but can be anything
+Recommended to use RITFORI as USRPRF, but can be anything 
+   and HOMEDIR can be what you want, but do not create the last directory (usually /USRPRF)
 Do not use special characters except for _ in USRPRF and PASSWORD
 
-   CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/usrprf') 
+   CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/home/usrprf') 
 
 Download RITFORI code to your pc from https://github.com/RitFori/RitFori/archive/refs/heads/main.zip
  (just put the link into a browser or use Github - Code - Download Zip) 
@@ -38,7 +45,7 @@ Upload RitFori-main.zip to /tmp on the IBM i
 Web (HTTP) Admin with user profile who has *IOSYSCFG
 DCM Setup part 1 – Manual – see Instructions.pdf
 
-    /USRPRF/acme/data/certs/name.domain.TLD_ecc/lekeystore.jks
+    /HOMEDIR/acme/data/certs/name.domain.TLD_ecc/lekeystore.jks
     Jks_password
     name.domain.TLD
 

@@ -23,7 +23,7 @@ domain=$(echo $2 | sed "s/\'//g")
 cd /tmp/ritfori/code
 # create and edit a script to import the Let's Encrypt CAs into the DCM
 cp CA_Curl.txt CA_Curl.sh
-sed -i 's/$AUTH/'$(whoami)'/' CA_Curl.sh 
+sed -i 's:$TOPDIR:'$HOME':' CA_Curl.sh 
 sed -i 's/$DOMAIN/'$domain'/' CA_Curl.sh
 # sed delimiter is # to delete ' from Domain name
 sed -i "s#/'#/#" CA_Curl.sh

@@ -9,8 +9,8 @@ Developed by Terry Bartlett (Forever-i)
 * ACME		- Open Source software that will create and renew Let’s Encrypt certificates 
 					 available at https://github.com/acmesh-official/acme.sh  
 * CA			- Certificate Authority Root and Intermediate certificates needed on the IBM i for both the DCM and JKS 				
-* DCM 		- Digital Certificate Manager – IBM i certficate store
-* JKS			- Java Key Store (alternative certficate store)
+* DCM 		- Digital Certificate Manager – IBM i certificate store
+* JKS			- Java Key Store (alternative certificate store)
 * RSE API - Remote System Explorer API – used to import, associate certificate application and delete certificates in the DCM
 * TLD			- Top Level Domain – the end part of your domain name e.g. .com  .co.uk  .eu 
 
@@ -28,10 +28,10 @@ RitFori has been written and tested on V7.4 and V7.5.  The domain tested is regi
 
 RitFori does not currently work on V7.6. This will be investigated later.  Wildcard domains have not been tested.
 
-Currently this is for one non wild card certificate. However it can be used for more than one certficate. I will add another program for this shortly.
+Currently this is for one non wild card certificate. However it can be used for more than one certificate. I will add another program for this shortly.
 
-Your certficates will be created as a TLS 1.3 ECC certificate with 384 length (ECDSA SHA-384). It will be stored in 
-* /*usrprf*/acme/data/certs/*name.domain.TLD_ecc*
+Your certificates will be created as a TLS 1.3 ECC certificate with 384 length (ECDSA SHA-384). It will be stored in 
+* /*HOMEDIR*/acme/data/certs/*name.domain.TLD_ecc*
 
 The Library is called RITFORI, so it may be an idea to create the user profile as RITFORI, but you can have any profile you want. It is a very good idea to only use this user for only Let’s Encypt. The security is set up so that only this user has access (except for other *ALLOBJ users).  The parameters entered are stored in a table in the RITFORI library that are masked so that only your user profile has access except for users with *SECADM or *SYSADM).
 
@@ -47,7 +47,7 @@ The Library is called RITFORI, so it may be an idea to create the user profile a
 **The repeatable steps – can be run as scheduled jobs**
 1. **Renew** your certificate.  This includes replacing the certificate in the JKS and the DCM if required moving the application from the old certificate to the new one.
 2. Run **LE_ADMIN5** to restart ADMIN5 so it picks up the new JKS.
-3. Restart your TLS applications to pick the renewed certificate – you must do this manually or create a scheduled job to do so, when required.  The previous certificate will be used until this step is completed or the certficate expires.
+3. Restart your TLS applications to pick the renewed certificate – you must do this manually or create a scheduled job to do so, when required.  The previous certificate will be used until this step is completed or the certificate expires.
 4. Finally **DCM Delete Certificate** to remove the older certificate, if required.
 
 Normally you can use the same certificate for the RSE API and your applications.  The new certificate will not be used until the applications are restarted.

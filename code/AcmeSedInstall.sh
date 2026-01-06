@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Change default acme.sh
-# Parameters $1 Top Level Directory
-cd $1/acme.sh-master
+
+cd $HOME/acme.sh-master
 # if there is not a acmecopy.sh already then
 #   change shebang from #!/usr/bin/env to #!/QOpenSys/pkgs/bin/bash/ 
 #   add a CHANGE NOTIFICATION

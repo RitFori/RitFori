@@ -3,13 +3,18 @@ PGM
 /* Copy repeated code into $HOME and compile into RITFORI library */
 
 /* Other Variables */
-DCL VAR(&STRING) TYPE(*CHAR) LEN(32)
-DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(11)
+DCL VAR(&STRING) TYPE(*CHAR) LEN(1024)
+DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(1024)
+DCL VAR(&TOPLEN) TYPE(*DEC) LEN(7 0) 
 DCL VAR(&USRPRF) TYPE(*CHAR) LEN(10)
 
-/* Top directory is now /UserId */
-RTVUSRPRF RTNUSRPRF(&USRPRF)
-CHGVAR VAR(&TOPDIR) VALUE('/' *CAT &USRPRF)
+/* Top directory is now Home directory of user */
+CRTDTAARA DTAARA(USRHOME) TYPE(*CHAR) LEN(1024) VALUE('     ')
+CHGVAR VAR(&STRING) VALUE('/tmp/ritfori/code/Store_home.sh')
+STRQSH CMD(&STRING)
+
+/* Top directory is now Home directory of user */
+RTVDTAARA  DTAARA(USRHOME *ALL) RTNVAR(&TOPDIR)
 
 CRTBNDCL PGM(RITFORI/AcmeSetup2) SRCSTMF('/tmp/ritfori/code/AcmeSetup2.clle') +
             DFTACTGRP(*NO) ACTGRP(*NEW)
@@ -24,11 +29,11 @@ CHGVAR VAR(&STRING) VALUE(&TOPDIR *TCAT '/acme/source/')
 CD &STRING       
 
 /* Copy SQL User Defined Functions */
-CPY OBJ('/tmp/ritfori/code/DCM_AscApp.sqludf') 
-CPY OBJ('/tmp/ritfori/code/DCM_DeleteCert.sqludf') 
-CPY OBJ('/tmp/ritfori/code/DCM_DltSession.sqludf') 
-CPY OBJ('/tmp/ritfori/code/DCM_GetSession1.sqludf')
-CPY OBJ('/tmp/ritfori/code/DCM_ImportCert.sqludf')
+CPY OBJ('/tmp/ritfori/code/DCM_AscApp.sqludf') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_DeleteCert.sqludf') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_DltSession.sqludf') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_GetSession1.sqludf') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_ImportCert.sqludf') REPLACE(*YES)
 
 /* Create RSE API Associate Application with Certificate Sql UDF */
 CHGVAR VAR(&STRING) VALUE('DCM_AscApp.sqludf')
@@ -50,14 +55,14 @@ RUNSQLSTM SRCSTMF(&STRING) COMMIT(*NONE) NAMING(*SQL) USRPRF(*USER)
 CHGVAR VAR(&STRING) VALUE('DCM_ImportCert.sqludf')
 RUNSQLSTM SRCSTMF(&STRING) COMMIT(*NONE) NAMING(*SQL) USRPRF(*USER)
 
-CPY OBJ('/tmp/ritfori/code/DCMDltCert.clle')
-CPY OBJ('/tmp/ritfori/code/DCMDltCert.cmd')
-CPY OBJ('/tmp/ritfori/code/DCM_Import.clle')
-CPY OBJ('/tmp/ritfori/code/DCM_IssNew.clle')
-CPY OBJ('/tmp/ritfori/code/DCM_IssNew.cmd')
-CPY OBJ('/tmp/ritfori/code/LE_Admin5.clle')
-CPY OBJ('/tmp/ritfori/code/LERenew.clle')
-CPY OBJ('/tmp/ritfori/code/LERenew.cmd')
+CPY OBJ('/tmp/ritfori/code/DCMDltCert.clle') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCMDltCert.cmd') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_Import.clle') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_IssNew.clle') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_IssNew.cmd') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/LE_Admin5.clle') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/LERenew.clle') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/LERenew.cmd') REPLACE(*YES)
 
 
 CRTBNDCL PGM(RITFORI/DCMDltCert) SRCSTMF('DCMDltCert.clle')  +
@@ -78,15 +83,15 @@ CRTBNDCL PGM(RITFORI/LERenew) SRCSTMF('LERenew.clle') +
             DFTACTGRP(*NO) ACTGRP(*NEW)
 CRTCMD CMD(RITFORI/LERenew) PGM(RITFORI/LERenew) SRCSTMF('LERenew.cmd')            
 
-CPY OBJ('/tmp/ritfori/code/LERenew.sh')
-CPY OBJ('/tmp/ritfori/code/LERenewCert.sh')
-CPY OBJ('/tmp/ritfori/code/LERenewJKS.sh')
-CPY OBJ('/tmp/ritfori/code/DCM_Domain_Cert.sh')
-CPY OBJ('/tmp/ritfori/code/DCM_DeleteCert.sh')
+CPY OBJ('/tmp/ritfori/code/LERenew.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/LERenewCert.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/LERenewJKS.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_Domain_Cert.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/DCM_DeleteCert.sh') REPLACE(*YES)
 
-CPY OBJ('/tmp/ritfori/code/AcmeIssue1.sh')
-CPY OBJ('/tmp/ritfori/code/AcmeIssue2.sh')
-CPY OBJ('/tmp/ritfori/code/AcmeSedConfig.sh')
+CPY OBJ('/tmp/ritfori/code/AcmeIssue1.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/AcmeIssue2.sh') REPLACE(*YES)
+CPY OBJ('/tmp/ritfori/code/AcmeSedConfig.sh') REPLACE(*YES)
 
 
 EXIT:

@@ -29,7 +29,7 @@ DCM_CA_Import.sh $certname $domain
 
 # create and edit a script to delete the session token and letable entry
 cp DCM_DltCurl.txt DCM_DltCurl.sh
-sed -i 's/$AUTH/'$(whoami)'/' DCM_DltCurl.sh 
+sed -i 's:$TOPDIR:'$HOME':' DCM_DltCurl.sh 
 sed -i 's/$DOMAIN/'$domain/ DCM_DltCurl.sh
 # Get Session Token from LETABLE
 sqltxt='db2util "select LEVALUE from LETABLE where LETYPE = *SESSION* and '

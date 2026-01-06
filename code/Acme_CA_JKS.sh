@@ -1,6 +1,5 @@
 #!/QOpenSys/pkgs/bin/bash
 # Import Let's Encrypt CAs to JKS (Java Keystore) needed for DCM
-# Parameters $1 Top Level Directory (Default /RITFORI)
 
 PATH=/QOpenSys/pkgs/bin:$PATH
 export PATH PASE_PATH
@@ -17,7 +16,7 @@ domain=${domain//\"/\'}
 pass=$(db2util "select LEVALUE from LETABLE where LETYPE='CERT' and LEDOMAIN=$domain")
 pass=${pass//\"/ }
 domain=${domain//\'/}
-domainpath=$1/acme/data/certs/
+domainpath=$HOME/acme/data/certs/
 domainpath=$domainpath$domain
 ecc=_ecc
 domainpath=$domainpath$ecc
@@ -30,7 +29,7 @@ cd /tmp/ritfori/LE_CAs
 #curl -L https://letsencrypt.org/certs/2024/e7.pem > e7.pem
 #curl -L https://letsencrypt.org/certs/2024/e8.pem > e8.pem
 #curl -L https://letsencrypt.org/certs/2024/e9.pem > e9.pem
-cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $1/acme/data/certs/ca-bundle.pem
+cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $HOME/acme/data/certs/ca-bundle.pem
 
 cd $domainpath
 

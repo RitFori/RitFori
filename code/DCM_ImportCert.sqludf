@@ -14,13 +14,19 @@ no external action
    set option commit=*none, datfmt=*iso, usrprf=*user,
     DBGVIEW=*SOURCE, OUTPUT=*PRINT
 begin
-declare CERT_PATH varchar(128);
+declare CERT_PATH varchar(1173);
 declare OSTATUS char(3);
 declare OTITLE char(20);
 declare ODETAIL varchar(256);
 declare OMETHOD char(20);
 declare OINSTANCE char(15);
-set CERT_PATH='/' || current user || '/acme/data/certs/' || IDOMAIN || '_ecc';
+declare USER_PATH char(1024);
+select HOME_DIRECTORY into USER_PATH
+   from QSYS2.USER_INFO_BASIC
+   where AUTHORIZATION_NAME = current user;
+set CERT_PATH = trim(USER_PATH) concat 
+      '/acme/data/certs/' concat 
+      trim(IDOMAIN) concat '_ecc';
 with IMPORT_CERT as ( 
    select *
       from table(qsys2.HTTP_POST_VERBOSE (
@@ -34,7 +40,7 @@ with IMPORT_CERT as (
                      and LEDOMAIN is null) concat '",
            "certType": "SERVER_CLIENT",
            "certFormat": "PKCS12",
-           "certAlias": "' concat IDOMAIN concat 
+           "certAlias": "' concat trim(IDOMAIN) concat '_' concat
               (values(date(current timestamp))) concat '",
            "certData": "' concat
               (select line from table (qsys2.ifs_read(
@@ -117,7 +123,7 @@ if OSTATUS = '204' then
    insert into RITFORI.LETABLE
       values(IDOMAIN,
          'CURRENT_CERTIFICATE',
-         IDOMAIN concat (values(date(current timestamp))),
+         IDOMAIN concat '_' concat (values(date(current timestamp))),
          current timestamp);
    end if;
 

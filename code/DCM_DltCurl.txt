@@ -1,5 +1,5 @@
 curl -i -o /tmp/ritfori/code/tmp/RSEAPI_DltSession.log -X 'DELETE' \
-  --cacert /$AUTH/acme/data/certs/ca-bundle.pem \
+  --cacert $TOPDIR/acme/data/certs/ca-bundle.pem \
   'https://$DOMAIN:2012/rseapi/api/v1/session' \
   -H 'accept: */*' \
   -H 'Authorization: Bearer $TOKEN'
