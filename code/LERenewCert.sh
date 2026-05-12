@@ -26,9 +26,14 @@ export CF_Token=$token
 rm $toppath/acme/data/certs/$domainpath/renewcert.log
 touch $toppath/acme/data/certs/$domainpath/renewcert.log
 
-acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/data/certs/$domainpath/renewcert.log
+# setup LE CA bundle
+curlca=$HOME/acme/data/certs/ca-bundle.pem
+acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/data/certs/$domainpath/renewcert.log --ca-bundle $curlca
 
-if grep -Fq  "Cert success." $toppath/acme/data/certs/$domainpath/renewcert.log; then 
+# Remove Token from Config file for security reasons
+/tmp/ritfori/code/acmesedconfig.sh $HOME
+
+if grep -Fq  "Cert success." $toppath/acme/log/renewcert.log; then 
     db2util "insert into LERESULTS values ($domain, 'RENEW', '', 'Certificate renewed $domain', 0, current timestamp)"
     printf "\e[32m! Certificate renew success $domain \033\e[0m \n"
     RETURN=0

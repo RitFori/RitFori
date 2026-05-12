@@ -1,25 +1,10 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is advisable to use this alongside the Instructions PDF.
 
-N.B. If you download the new Change_HOME-Directory from 6th January 2026,
-     having used the Original version, follow these instructions
-
-If you do NOT change the USRPRF home directory
-1. copy the new code into /tmp/ritfori/code 
-2. CRTBNDCL PGM(QTEMP/AcmePgms)                                            
-   SRCSTMF('/tmp/ritfori/code/AcmePgms.clle') DFTACTGRP(*NO) ACTGRP(*NEW)  
-3. CALL QTEMP/ACMEPGMS
-
-If you DO change the USRPRF home directory
-Use a DIFFERENT user to delete the current DIR and library to start again
-Now change the HOME directory of your user e.g. to /home/USRPRF
-1. DLTLIB LIB(RITFORI)
-2. RMDIR DIR('/USRPRF') SUBTREE(*ALL) 
-3. RMDIR DIR('/tmp/USRPRF') SUBTREE(*ALL)
-4. DEL OBJLNK('/tmp/RitFori-main.zip')
-4. CHGUSRPRF USRPRF(USRPRF) HOMEDIR('/home/USRPRF') or whatever directory you want
-5. Start from the beginning and download RITFORI etc
-6. Once yor finished you can delete the OLD Certificate from the DCM
+NOTE Change_HOME-Directory
+	N.B. If you downloaded the new Change_HOME-Directory from 6th January 2026 or later,
+	having used the Original version, follow the instructions at the bottom of this 
+	document first then return to "5250 Signon as your USRPRF"
 
 If starting for the first time, follow these instructions
 
@@ -39,7 +24,7 @@ Download RITFORI code to your pc from https://github.com/RitFori/RitFori/archive
 Upload RitFori-main.zip to /tmp on the IBM i
  (ACS – Integrated File System is good for this)
 
-5250 Signon as your USRPRF
+5250 Signon as your USRPRF from above
 
     CD DIR('/tmp')
     CALL PGM(QP2TERM)
@@ -47,15 +32,14 @@ Upload RitFori-main.zip to /tmp on the IBM i
     export PATH PASE_PATH
     unzip ./RitFori-main.zip
     mv RitFori-main ritfori
-   F3
+    F3
 
-5250 Still Signed on as your USRPRF
+5250 Still Signed on as your USRPRF from above
 
-    CRTBNDCL PGM(QTEMP/AcmeSetup1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') DBGVIEW(*SOURCE)
-    CALL PGM(ACMESETUP1)
+    CRTBNDCL PGM(QGPL/RITFORISU) SRCSTMF('/tmp/ritfori/code/RitforiSU.clle') DBGVIEW(*SOURCE)
+    CALL PGM(QGPL/RITFORISU)
 
-5250 Sign off and on again as above USRPRF
-
+This will take a few minutes
     ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
 
 Web (HTTP) Admin with user profile who has *IOSYSCFG
@@ -63,24 +47,50 @@ DCM Setup part 1 – Manual – see Instructions.pdf
 
     /HOMEDIR/acme/data/certs/name.domain.TLD_ecc/lekeystore.jks
     Jks_password
-    name.domain.TLD
+    select exiting certificate from the keystore
+    click dropdown to select certificate = name.domain.TLD
 
-Browser
+Browser to test RSEAPI
 
     https://name.domain.TLD:2012/openapi/ui/
 
-DCM with user profile who has *ALLOBJ and *SECADM - can use your USRPRF 
+DCM with user profile who has *ALLOBJ and *SECADM - can use your USRPRF from above
 DCM Setup part 2 – Manual – see Instructions.pdf
 
     your_application_name_for_DCM
 
-5250 Still Signed on as your USRPRF
+5250 Still Signed on as your USRPRF from above
 
     DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
 
-Renew the certificate before 90 days (Do not Renew it with DCM=YES on the same day)
+Renew the certificate before 90 days 30 to 60 days recommended 
+    (Do not Renew it with DCM=YES on the same day)
 
     LERenew CERTNAME('name.domain.TLD') DCM_YN(YES) 
 
+When your happy that all is well restart the appliactions
+
     CALL PGM(LE_ADMIN5) 
+    Create programs to restart your own appliactions
     DCMDltCert CERTNAME('name.domain.TLD')
+
+
+
+NOTE Change_HOME-Directory ONLY IF VERSION 1 WAS DOWNLOADED 
+    and used and a newer version since
+    If you DID NOT change the USRPRF home directory
+	1. copy the new code into /tmp/ritfori/code 
+	2. CRTBNDCL PGM(QTEMP/AcmePgms)                                            
+	   SRCSTMF('/tmp/ritfori/code/AcmePgms.clle') DFTACTGRP(*NO) ACTGRP(*NEW)  
+	3. CALL QTEMP/ACMEPGMS
+
+    If you DID change the USRPRF home directory
+	Use a DIFFERENT user to delete the current DIR and library to start again
+	Now change the HOME directory of your user e.g. to /home/USRPRF
+	1. DLTLIB LIB(RITFORI)
+	2. RMDIR DIR('/USRPRF') SUBTREE(*ALL) 
+	3. RMDIR DIR('/tmp/RITFORI') SUBTREE(*ALL)
+	4. DEL OBJLNK('/tmp/RitFori-main.zip')
+	5. CHGUSRPRF USRPRF(USRPRF) HOMEDIR('/home/USRPRF') or whatever directory you want
+	6. Start from the first "5250 Signon as your USRPRF"
+	7. Once yor finished you can delete the OLD Certificate from the DCM

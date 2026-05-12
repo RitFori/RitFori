@@ -3,10 +3,16 @@
 # Download acme code (needs to be uncommented)
 # unzip acme code for ececution
 
+PATH=/QOpenSys/pkgs/bin:$PATH
+export PATH PASE_PATH 
+
 echo Running GetAcme.sh
 cd /tmp/ritfori 
-PATH=/QOpenSys/pkgs/bin:$PATH
-wget --ca-certificate=.curl.pem -O acme.zip 'https://github.com/acmesh-official/acme.sh/archive/refs/heads/master.zip'
+
+# setup Curl CA bundle
+curlca=$HOME/.curl.pem 
+
+wget --ca-certificate=$curlca -O acme.zip 'https://github.com/acmesh-official/acme.sh/archive/refs/heads/master.zip'
 topdir=$HOME
 unzip -q acme.zip -d $topdir
 cd $topdir/acme.sh-master

@@ -1,0 +1,60 @@
+/*PGM PARM(&USRPRF &TOPDIR) */
+PGM
+
+/* Create your USRPRF before executing this.  +
+    The user can be anything but only _ special characters +
+    the HOMEDIR can be where you like but don't create it e.g. /existing_dirs/usrprf */
+/* CRTUSRPRF USRPRF(USRPRF) PASSWORD(password) +
+    CURLIB(RITFORI) SPCAUT(*ALLOBJ *SECADM *AUDIT) HOMEDIR('/home/usrprf') */
+/* This will be executed signed in as USRPRF created by using SBMJOB +
+    It sets up  SSH and bash plus the home directory and libray RITFORI */    
+
+/* Constant variables */
+DCL VAR(&UTF) TYPE(*CHAR) LEN(25) VALUE('export LANG=en_US.UTF-8; ')
+
+/* Parameter Variables */
+DCL VAR(&USRPRF) TYPE(*CHAR) LEN(10)
+DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(1024)
+
+/* Other Variables */       
+DCL VAR(&LOG) TYPE(*CHAR) LEN(1024)
+DCL var(&LOGPIPE) TYPE(*CHAR) LEN(1024)
+DCL VAR(&STRING) TYPE(*CHAR) LEN(1024)
+
+/* Setup User Profile */
+CRTLIB LIB(RITFORI) TEXT('RITFORI Let''s Encrypt Acme Programs') +
+   AUT(*EXCLUDE) CRTAUT(*EXCLUDE) CRTOBJAUD(*NONE) 
+CHGCURLIB CURLIB(RITFORI)
+
+RTVUSRPRF  USRPRF(*CURRENT)  RTNUSRPRF(&USRPRF)
+MKDIR DIR('~') DTAAUT(*EXCLUDE) OBJAUT(*NONE)  
+CD ('~')
+
+CRTDTAARA DTAARA(USRHOME) TYPE(*CHAR) LEN(1024) VALUE('     ')
+MONMSG MSGID(CPF1023)
+CHGVAR VAR(&STRING) VALUE('/tmp/ritfori/code/Store_home.sh')
+STRQSH CMD(&STRING)
+RTVDTAARA  DTAARA(USRHOME *ALL) RTNVAR(&TOPDIR)
+/* Top directory is now Home directory of user */
+CHGATR OBJ(&TOPDIR) ATR(*CCSID) VALUE(1208)
+
+/* Top directory is now directory of user */
+CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/setupUser.log ')
+CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
+
+/* Setup SSH and .profile */
+CHGVAR VAR(&STRING) VALUE(&UTF *CAT  '/tmp/ritfori/code/SSH_Profile.sh ' *CAT &LOGPIPE)
+STRQSH CMD(&STRING)
+
+/* Set BASH as the default shell for this user */
+CHGVAR VAR(&STRING) VALUE('CALL QSYS2.SET_PASE_SHELL_INFO(''' *CAT &USRPRF *TCAT ''',''/QOpenSys/pkgs/bin/bash'')')
+RUNSQL SQL(&STRING)
+CHGFCNUSG FCNID(QIBM_DB_SECADM) USER(&USRPRF) USAGE(*ALLOWED)
+
+CRTBNDCL PGM(RITFORI/ACMESETUP1) SRCSTMF('/tmp/ritfori/code/AcmeSetup1.clle') +
+    DFTACTGRP(*NO) ACTGRP(*NEW) DBGVIEW(*SOURCE)
+
+CHGCURLIB CURLIB(RITFORI) 
+SBMJOB CMD(CALL PGM(ACMESETUP1)) JOB(ACMESETUP1)
+
+ENDPGM

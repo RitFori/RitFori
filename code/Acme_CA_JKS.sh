@@ -29,7 +29,7 @@ cd /tmp/ritfori/LE_CAs
 #curl -L https://letsencrypt.org/certs/2024/e7.pem > e7.pem
 #curl -L https://letsencrypt.org/certs/2024/e8.pem > e8.pem
 #curl -L https://letsencrypt.org/certs/2024/e9.pem > e9.pem
-cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $HOME/acme/data/certs/ca-bundle.pem
+#cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $HOME/acme/data/certs/ca-bundle.pem
 
 cd $domainpath
 

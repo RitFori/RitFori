@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Change default acme.sh
 
+PATH=/QOpenSys/pkgs/bin:$PATH
+export PATH PASE_PATH	
+
 cd $HOME/acme.sh-master
 # if there is not a acmecopy.sh already then
 #   change shebang from #!/usr/bin/env to #!/QOpenSys/pkgs/bin/bash/ 
