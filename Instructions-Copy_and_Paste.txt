@@ -1,11 +1,6 @@
 This is a simple version of the instructions to simplify Copy and Paste to 5250.  
 It is advisable to use this alongside the Instructions PDF.
 
-NOTE Change_HOME-Directory
-	N.B. If you downloaded the new Change_HOME-Directory from 6th January 2026 or later,
-	having used the Original version, follow the instructions at the bottom of this 
-	document first then return to "5250 Signon as your USRPRF"
-
 If starting for the first time, follow these instructions
 
 Download instructions
@@ -34,11 +29,14 @@ Upload RitFori-main.zip to /tmp on the IBM i
     mv RitFori-main ritfori
     F3
 
-5250 Still Signed on as your USRPRF from above
+5250 Still Signed on as your USRPRF from above 
 
     CRTBNDCL PGM(QGPL/RITFORISU) SRCSTMF('/tmp/ritfori/code/RitforiSU.clle') DBGVIEW(*SOURCE)
     CALL PGM(QGPL/RITFORISU)
 
+    This will submit a job that will take a few seconds, check that is doesn't have a messsage wait  
+
+5250 Sign off and on again as your USRPRF from above, so that SSH works correctly
 This will take a few minutes
     ACMESETUP2 EMAIL('e-mail') CERTNAME('name.domain.TLD') TOKEN('"domain_token"') JKSPASS('jks_password')
 
@@ -50,7 +48,7 @@ DCM Setup part 1 – Manual – see Instructions.pdf
     select exiting certificate from the keystore
     click dropdown to select certificate = name.domain.TLD
 
-Browser to test RSEAPI
+Browser to test RSEAPI - if you get an RSEAPI Documentation page everything is ok
 
     https://name.domain.TLD:2012/openapi/ui/
 
@@ -59,9 +57,10 @@ DCM Setup part 2 – Manual – see Instructions.pdf
 
     your_application_name_for_DCM
 
-5250 Still Signed on as your USRPRF from above
+5250 Still Signed on as your USRPRF from above (or sign on again)
+N.B. The CERTAPP paramter must be in UPPER case
 
-    DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('certificate_app_name') 
+    DCM_SETUP3 CERTNAME('name.domain.TLD') USRPWD('usr_password') DCMPWD('DCM_password') CERTAPP('CERTIFICATE_APP_NAME') 
 
 Renew the certificate before 90 days 30 to 60 days recommended 
     (Do not Renew it with DCM=YES on the same day)
@@ -75,9 +74,12 @@ When your happy that all is well restart the appliactions
     DCMDltCert CERTNAME('name.domain.TLD')
 
 
+NOTE for VERSION 2 -Change_HOME-Directory
+ONLY IF VERSION 1 WAS DOWNLOADED and used and a newer version since
+	N.B. If you downloaded the new Change_HOME-Directory from 6th January 2026 or later,
+	having used the Original version, follow the instructions at the bottom of this 
+	document first then return to "5250 Signon as your USRPRF"
 
-NOTE Change_HOME-Directory ONLY IF VERSION 1 WAS DOWNLOADED 
-    and used and a newer version since
     If you DID NOT change the USRPRF home directory
 	1. copy the new code into /tmp/ritfori/code 
 	2. CRTBNDCL PGM(QTEMP/AcmePgms)                                            

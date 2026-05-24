@@ -20,18 +20,18 @@ curlca=$HOME/.curl.pem
 # acme.sh DNS API for validation should be automatic - list here https://github.com/acmesh-official/acme.sh/wiki/dnsapi
 #    OR you can use DNS alias mode here https://github.com/acmesh-official/acme.sh/wiki/DNS-alias-mode 
 #       will need to add --challenge-alias and --dns
-acme.sh --issue --force --dns dns_cf -d $1 --keylength ec-384 --always-force-new-domain-key --log $HOME/acme/log/acme_issue1.log --ca-bundle $curlca
+acme.sh --issue --force --dns dns_cf -d $1 --keylength ec-384 --always-force-new-domain-key --log $HOME/acme/log/acme_issue1_$1.log --ca-bundle $curlca
 
 # Remove Token from Config file for security reasons
 /tmp/ritfori/code/acmesedconfig.sh $HOME
 
-if grep -Fq  "Cert success." $toppath/acme/log/acme_issue1.log; then 
-    db2util "insert into LERESULTS values ($domain, 'ISSUE1', '', 'Certificate renewed $domain', 0, current timestamp)"
-    printf "\e[32m! Certificate issue success $domain \033\e[0m \n"
+if n=$(grep "Cert success." $HOME/acme/log/acme_issue1_$domain.log); then
+    db2util "insert into LERESULTS values ('$domain', 'ISSUE1', 'OK', 'Main Cert Issue', 'Certificate issued for $domain', current timestamp)"
+    echo "Certificate issue 1 SUCCESS for $domain"
     RETURN=0
 else 
-    db2util "insert into LERESULTS values ($domain, 'ISSUE1', '', 'Certificate renew failed $domain', 1, current timestamp)"
-    printf "\e[31mX Certificate issue failed $domain \033\e[0m \n"
+    db2util "insert into LERESULTS values ('$domain', 'ISSUE1', 'X', 'Main Cert Issue', 'Certificate issue failed for $domain', current timestamp)"
+    echo "Certificate issue 1 FAILED for $domain"
     RETURN=1
 fi
 

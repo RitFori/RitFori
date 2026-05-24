@@ -6,6 +6,7 @@
 PATH=/QOpenSys/pkgs/bin:$PATH
 export PATH PASE_PATH
 
+touch $HOME/acme/log/DCM_CA_Import_$1.log
 echo running DCM_CA_Import
 # Get Session Token from LETABLE
 sqltxt='db2util "select LEVALUE from LETABLE where LETYPE = *SESSION* and '
@@ -36,10 +37,12 @@ echo $cert >> CA_Curl.sh
 CA_Curl.sh
 rm CA_Curl.sh
 # Check Log file for successful session token (bearer)
-if grep -Fq  "HTTP/1.1 204 No Content" /tmp/ritfori/code/tmp/setupCAs_Import.log; then
-    printf "\e[32m! CA certificate $1 successfully imported to DCM \033\e[0m \n"
+if n=$(grep "HTTP/1.1 204 No Content" $HOME/acme/log/DCM_CA_Import_$1.log); then
+    echo "CA certificate $1 SUCCESSFULLLY imported to DCM"
+    RETURN=0
 else
-    printf "\e[31mX CA certificate $1 failed to import to DCM \033\e[0m \n"
-    RETURN=64
-    exit $RETURN
+    echo "CA certificate $1 FAILED to import to DCM"
+    RETURN=1
 fi
+
+exit $RETURN

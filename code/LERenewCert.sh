@@ -23,23 +23,23 @@ token=$(db2util "select LEVALUE from LETABLE where LETYPE='TOKEN' and LEDOMAIN='
 cd  $toppath/.acme.sh
 # export token for domain
 export CF_Token=$token
-rm $toppath/acme/data/certs/$domainpath/renewcert.log
-touch $toppath/acme/data/certs/$domainpath/renewcert.log
+rm $toppath/acme/log/renewcert_$domain.log
+touch $toppath/acme/log/renewcert_$domain.log
 
 # setup LE CA bundle
 curlca=$HOME/acme/data/certs/ca-bundle.pem
-acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/data/certs/$domainpath/renewcert.log --ca-bundle $curlca
+acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/log/renewcert_$domain.log --ca-bundle $curlca
 
 # Remove Token from Config file for security reasons
 /tmp/ritfori/code/acmesedconfig.sh $HOME
 
-if grep -Fq  "Cert success." $toppath/acme/log/renewcert.log; then 
-    db2util "insert into LERESULTS values ($domain, 'RENEW', '', 'Certificate renewed $domain', 0, current timestamp)"
-    printf "\e[32m! Certificate renew success $domain \033\e[0m \n"
+if n=$(grep "Cert success." $toppath/acme/log/renewcert_$domain.log); then 
+    db2util "insert into LERESULTS values ('$domain', 'RENEW', 'OK', 'Cert Renew', 'Certificate renew successful for $domain', current timestamp)"
+    echo "Certificate renew SUCCESS $domain"
     RETURN=0
 else 
-    db2util "insert into LERESULTS values ($domain, 'RENEW', '', 'Certificate renew failed $domain', 1, current timestamp)"
-    printf "\e[31mX Certificate renew failed $domain \033\e[0m \n"
+    db2util "insert into LERESULTS values ('$domain', 'RENEW', 'X', 'Cert Renew', 'Certificate renew failed for $domain', current timestamp)"
+    echo "Certificate renew FAILED $domain"
     RETURN=1
 fi
 

@@ -34,7 +34,7 @@ domainpath=$toppath/acme/data/certs/${domain}_ecc
       # Import Domain Certificate to DCM
       ic_status=$(db2util "select RITFORI.DCMIMPCERT('$domain') from sysibm.sysdummy1")
       if [[ "$ic_status" == '"204"' ]]; then
-         echo "$domain certificate imported to DCM"
+         echo "$domain certificate imported SUCCESSFULLY to DCM"
          # Add Aplication to certificate in DCM
          ap_status=$(db2util "select RITFORI.DCMASCAPP('$domain') from sysibm.sysdummy1")
       else

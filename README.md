@@ -22,7 +22,7 @@ This application currently called RitFori is an attempt to fully automate the cr
 
 TLS is important for applications.  It encrypts the traffic between the user and the IBM i so that it cannot be read by hackers.  Most applications that use web pages need TLS, as modern browsers are insisting on the use of HTTPS which needs TLS certificates.  More recently they have blocked the advanced, “I want to ignore the lack of security” too.  The lifetime of TLS certificates, for major browsers, are becoming shorter to ensure better security.  Currently it is 200 days. This is changing to 100 days on the 15th March 2027 and 47 days on 15th March 2029 by major browsers.
 
-Let's Encrypt use 90 days, changing to 45 days 13 May 2026, 64 days 10 February 2027 and 45 days 16th February 2028.  Hence the requirement for automation.
+Let's Encrypt use 90 days, 64 days 10 February 2027 and 45 days 16th February 2028.  Hence the requirement for automation.  Let's Encrypt is also allowing 45 day certficates from 13th May 2026 for test purposes.
 
 ### About this software
 

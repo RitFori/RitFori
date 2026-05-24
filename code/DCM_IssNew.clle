@@ -20,10 +20,10 @@ DCL VAR(&TOPDIR) TYPE(*CHAR) LEN(1024)
 CHGCURLIB CURLIB(RITFORI)
 /* Top directory is now Home directory of user */
 RTVDTAARA  DTAARA(USRHOME *ALL) RTNVAR(&TOPDIR)
-CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/' *CAT &CERTNAME *TCAT '_IssNew.log ')
+CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/IssueNew_' *CAT &CERTNAME *TCAT '.log ')
 CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
 
-/* Log QSH output to setup.log for this job */
+/* Log QSH output to IssueNew_DOMAIN.log for this job */
 CHGVAR VAR(&STRING) VALUE('touch ' *CAT &LOG *TCAT ' ')
 STRQSH CMD(&STRING)
 CHGATR OBJ(&LOG) ATR(*CCSID) VALUE(1208)
@@ -37,9 +37,8 @@ CHGVAR VAR(&STRING) VALUE(&STRING *TCAT ' ' *CAT &TOKEN *TCAT ' ')
 CHGVAR VAR(&STRING) VALUE(&STRING *TCAT ' ' *CAT &CERTAPP *TCAT &LOGPIPE)
 STRQSH CMD(&STRING)
 
-/* Get RSE API Get Session Token, Import Certificate to DCM, */
-/* Get RSE API Get Session Token, Import Certificate to DCM, */
-CALL PGM(RITFORI/DCM_IMPORT) PARM(&CERTNAME &LOG)
+/* Get RSE API Get Session Token and Import Certificate to DCM, */
+CALL PGM(RITFORI/DCM_IMPORT) PARM(&CERTNAME)
 
 EXIT:
 ENDPGM

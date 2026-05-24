@@ -55,20 +55,21 @@ DCM_Curl.sh
 rm DCM_Curl.sh
 
 # Check Log file for successful session token
-if grep -Fq  "HTTP/1.1 201 Created" /tmp/ritfori/code/tmp/RSEAPI_Session.log; then 
+if n=$(grep "HTTP/1.1 201 Created" $HOME/acme/log/RSEAPI_Session.log); then 
     #Get the token from the log file
-    token=$(awk '/Authorization:/{print $NF}' /tmp/ritfori/code/tmp/RSEAPI_Session.log)
+    token=$(awk '/Authorization:/{print $NF}' $HOME/acme/log/RSEAPI_Session.log)
     # remove the end of line
     token="${token%%[[:cntrl:]]}"
     domain=$(echo $1 | sed "s/'//g")
     # write the result to LETABLE
     db2util "insert into LETABLE values ('$domain', 'SESSION', '$token', current timestamp)"
-    printf "\e[32m! Session Token success for $domain \033\e[0m \n"
-    rm /tmp/ritfori/code/tmp/RSEAPI_Session.log
+    echo "RSEAPI Session Token SUCCESS for $domain"
+    # rm /tmp/ritfori/code/tmp/RSEAPI_Session.log
+    RETURN=0
 else
-    printf "\e[31mX Session Token failed for $domain \033\e[0m \n"
-    RETURN=64
-    exit $RETURN
+    echo "RSEAPI Session Token FAILED for $domain"
+    RETURN=1
 fi
 
+exit $RETURN
 

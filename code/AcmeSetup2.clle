@@ -27,7 +27,7 @@ RTVDTAARA  DTAARA(USRHOME *ALL) RTNVAR(&TOPDIR)
 CHGVAR VAR(&LOG) VALUE(&TOPDIR *TCAT '/acme/log/acme_setup2.log ')
 CHGVAR VAR(&LOGPIPE) VALUE(' >> ' *CAT &LOG *TCAT ' 2>&1 ')
 
-/* Log QSH output to setup.log for this job */
+/* Log QSH output to setup2.log for this job */
 CHGVAR VAR(&STRING) VALUE('touch ' *CAT &LOG *TCAT ' ')
 STRQSH CMD(&STRING)
 CHGATR OBJ(&LOG) ATR(*CCSID) VALUE(1208)
