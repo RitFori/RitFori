@@ -16,7 +16,7 @@ cd /tmp/ritfori/code
 # Get RSEAPI Session Token
 rm $HOME/acme/log/RSEAPI_Session.log 2> /dev/null || true
 touch $HOME/acme/log/RSEAPI_Session.log
-export LANG=en_US.UTF-8; RSEAPI_Session.sh $domain >> /home/ritforit42/acme/log/RSEAPI_Session.log 2>&1 
+export LANG=en_US.UTF-8; RSEAPI_Session.sh $domain >> $HOME/acme/log/RSEAPI_Session.log 2>&1 
 
 certname=isrg_root_x2
 touch $HOME/acme/log/DCM_CA_Import_$certname.log
