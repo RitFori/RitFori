@@ -1,4 +1,5 @@
-# RitFori
+# RitFori  -- N.B. This currently doesn't work for the DCM because of Let's Encypt New CAs
+#   -- We are working very hard to fix this
 IBM i Let's Encrypt Automation – Almost \
 Created by  Rowton IT Solutions Ltd and Forever-i Ltd
 Developed by Terry Bartlett (Forever-i)
