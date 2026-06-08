@@ -1,5 +1,5 @@
-# RitFori  -- This branch is currently being tested
-#          -- It has been tested once, but will be done again just in case
+# RitFori  -- This branch has been tested twice
+
 IBM i Let's Encrypt Automation – Almost \
 Created by  Rowton IT Solutions Ltd and Forever-i Ltd
 Developed by Terry Bartlett (Forever-i)
