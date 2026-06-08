@@ -8,7 +8,7 @@ export PATH PASE_PATH
 echo Running AcmeRegister.sh
 cd /tmp/ritfori/LE_CAs                                            
 leca=$HOME/acme/data/certs/ca-bundle.pem                          
-cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $leca
+cat int-ye2.pem int-ye1.pem root-ye.pem > $leca
 
 cd $HOME/.acme.sh
 

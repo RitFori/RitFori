@@ -1,17 +1,21 @@
 #!/QOpenSys/pkgs/bin/bash
 # Import each Let's Encrypt CAs into DCM
 # Parameters $1 CA Certificate Name
-#            $2 JKS Domain
 
 PATH=/QOpenSys/pkgs/bin:$PATH
 export PATH PASE_PATH
+
+# Get domain from db - returns with " "
+domain=$(db2util "values(RITFORI.JKSDOMAIN)")
+# change " to '
+domain=$(echo $domain | sed "s/\"/'/g")
 
 touch $HOME/acme/log/DCM_CA_Import_$1.log
 echo running DCM_CA_Import
 # Get Session Token from LETABLE
 sqltxt='db2util "select LEVALUE from LETABLE where LETYPE = *SESSION* and '
 sqltxt=$(echo $sqltxt | sed "s/\*/'/g")
-sqltxt="$sqltxt"" ""LEDOMAIN=$2"' "'
+sqltxt="$sqltxt"" ""LEDOMAIN = $domain"' "'
 token=$(eval $sqltxt)
 # execute the sql and place the result into $dpass 
 dpass=$(db2util "select LEVALUE from LETABLE where LETYPE='SYSTEM'")
@@ -20,7 +24,7 @@ dpass=$(echo $dpass | sed "s/\"//g")
 token=$(echo $token | sed "s/\"//g")
 
 # remove '' from $domain
-domain=$(echo $2 | sed "s/\'//g")
+domain=$(echo $domain | sed "s/\'//g")
 cd /tmp/ritfori/code
 # create and edit a script to import the Let's Encrypt CAs into the DCM
 cp CA_Curl.txt CA_Curl.sh
