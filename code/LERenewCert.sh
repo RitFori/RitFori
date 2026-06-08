@@ -28,10 +28,10 @@ touch $toppath/acme/log/renewcert_$domain.log
 
 # setup LE CA bundle
 curlca=$HOME/acme/data/certs/ca-bundle.pem
-acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/log/renewcert_$domain.log --ca-bundle $curlca
+acme.sh --renew --force -d $domain --keylength ec-384 --always-force-new-domain-key  --log $toppath/acme/log/renewcert_$domain.log --ca-bundle $curlca --preferred-chain "Root YE"
 
 # Remove Token from Config file for security reasons
-/tmp/ritfori/code/acmesedconfig.sh $HOME
+$HOME/acme/source/acmesedconfig.sh $HOME
 
 if n=$(grep "Cert success." $toppath/acme/log/renewcert_$domain.log); then 
     db2util "insert into LERESULTS values ('$domain', 'RENEW', 'OK', 'Cert Renew', 'Certificate renew successful for $domain', current timestamp)"

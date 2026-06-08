@@ -22,7 +22,7 @@ curlca=$HOME/.curl.pem
 # acme.sh DNS API for validation should be automatic - list here https://github.com/acmesh-official/acme.sh/wiki/dnsapi
 #    OR you can use DNS alias mode here https://github.com/acmesh-official/acme.sh/wiki/DNS-alias-mode 
 #       willl need to add --challenge-alias and --dns
-acme.sh --issue --force --dns dns_cf -d $1 --keylength ec-384 --always-force-new-domain-key --log $HOME/acme/log/Acme_issue2_$1.log --ca-bundle $curlca
+acme.sh --issue --force --dns dns_cf -d $1 --keylength ec-384 --always-force-new-domain-key --log $HOME/acme/log/Acme_issue2_$1.log --ca-bundle $curlca --preferred-chain "Root YE"
 
 # Remove Token from Config file
 $HOME/acme/source/acmesedconfig.sh $HOME

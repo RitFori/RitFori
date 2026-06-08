@@ -24,18 +24,19 @@ mkdir $domainpath
 
 # Already downloaded
 cd /tmp/ritfori/LE_CAs
-#curl -L https:/letsencrypt.org/certs/isrgrootx1.pem > isrg_root_x1.pem
-#curl -L https://letsencrypt.org/certs/isrg-root-x2.pem > isrg_root_x2.pem
-#curl -L https://letsencrypt.org/certs/2024/e7.pem > e7.pem
-#curl -L https://letsencrypt.org/certs/2024/e8.pem > e8.pem
-#curl -L https://letsencrypt.org/certs/2024/e9.pem > e9.pem
-#cat e7.pem e8.pem e9.pem isrg_root_x1.pem isrg_root_x2.pem > $HOME/acme/data/certs/ca-bundle.pem
-
-cd $domainpath
+#curl -L https://letsencrypt.org/certs/gen-y/root-ye.pem > root-ye.pem
+#tail -n +2 root-ye.pem | head -n -1 | tr -d '\n' > root-ye.txt
+#curl -L https://letsencrypt.org/certs/gen-y/int-ye1.pem > int-ye1.pem 
+#tail -n +2 int-ye1.pem | head -n -1 | tr -d '\n' > int-ye1.txt
+#curl -L https://letsencrypt.org/certs/gen-y/int-ye2.pem > int-ye2.pem 
+#tail -n +2 int-ye2.pem | head -n -1 | tr -d '\n' > int-ye2.txt
+#curl -L https://letsencrypt.org/certs/gen-y/int-ye3.pem > int-ye3.pem 
+#tail -n +2 int-ye3.pem | head -n -1 | tr -d '\n' > int-ye3.txt
+cat int-ye1.pem int-ye2.pem int-ye3.pem root-ye.pem > $HOME/acme/data/certs/ca-bundle.pem
 
 # Create JKS and import Let's Encrypt CA certficates
-keytool -import -alias isrg_root_x1 -file /tmp/ritfori/LE_CAs/isrg_root_x1.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
-keytool -import -alias isrg_root_x2 -file /tmp/ritfori/LE_CAs/isrg_root_x2.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
-keytool -import -alias e7 -file /tmp/ritfori/LE_CAs/e7.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
-keytool -import -alias e8 -file /tmp/ritfori/LE_CAs/e8.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
-keytool -import -alias e9 -file /tmp/ritfori/LE_CAs/e9.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
+cd $domainpath
+keytool -import -alias root-ye -file /tmp/ritfori/LE_CAs/root-ye.pem -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
+keytool -import -alias int-ye1 -file /tmp/ritfori/LE_CAs/int-ye1.pem  -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
+keytool -import -alias int-ye2 -file /tmp/ritfori/LE_CAs/int-ye2.pem  -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
+keytool -import -alias int-ye3 -file /tmp/ritfori/LE_CAs/int-ye3.pem  -keystore lekeystore.jks -storepass $pass -storetype PKCS12 -trustcacerts -noprompt
